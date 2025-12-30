@@ -84,36 +84,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 border-y bg-gradient-to-b from-slate-50 to-white">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div className="space-y-2">
-              <h3 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                5,000+
-              </h3>
-              <p className="text-sm font-medium text-gray-600">Farmers Connected</p>
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-orange-600 to-red-600 bg-clip-text text-transparent">
-                1,200+
-              </h3>
-              <p className="text-sm font-medium text-gray-600">Equipment Listed</p>
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                8,500+
-              </h3>
-              <p className="text-sm font-medium text-gray-600">Labourers Hired</p>
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                50+
-              </h3>
-              <p className="text-sm font-medium text-gray-600">Mandis Tracked</p>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       {/* Main Features Grid */}
       <section id="features" className="py-24 bg-white">
