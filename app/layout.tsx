@@ -19,7 +19,7 @@ export default function RootLayout({
       <body className="antialiased min-h-screen flex flex-col bg-slate-50">
         <AppProvider>
           <Header />
-          <main className="flex-1">
+          <main className="flex-1 pt-16">
             {children}
           </main>
           <Footer />

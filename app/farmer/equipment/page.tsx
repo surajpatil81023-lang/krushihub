@@ -90,16 +90,7 @@ export default function EquipmentListPage() {
                     </div>
 
                     <div className="w-full md:w-auto">
-                        <div className="flex items-center gap-2 border rounded-md px-3 py-2 bg-white">
-                            <Calendar className="h-4 w-4 text-gray-500" />
-                            <input
-                                type="date"
-                                className="outline-none text-sm bg-transparent"
-                                value={bookingDate}
-                                onChange={(e) => setBookingDate(e.target.value)}
-                                min={new Date().toISOString().split("T")[0]}
-                            />
-                        </div>
+
                     </div>
                 </div>
             </div>

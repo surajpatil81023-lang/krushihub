@@ -25,6 +25,18 @@ export function Header() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    // Prevent body scroll when mobile menu is open
+    useEffect(() => {
+        if (mobileMenuOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "unset";
+        }
+        return () => {
+            document.body.style.overflow = "unset";
+        };
+    }, [mobileMenuOpen]);
+
     const userTypes = [
         { label: "Farmer", href: "/auth/farmer/login", icon: "🌾", description: "Manage your farm", color: "green" },
         { label: "Labourer", href: "/auth/labour/login", icon: "👷", description: "Find work opportunities", color: "blue" },
