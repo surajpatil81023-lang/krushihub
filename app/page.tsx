@@ -24,10 +24,7 @@ export default function Home() {
       <section className="relative overflow-hidden bg-gradient-to-br from-green-50 via-emerald-50 to-white pb-20 pt-16 lg:pb-32 lg:pt-20">
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center max-w-5xl mx-auto space-y-8">
-            <div className="inline-flex items-center rounded-full bg-green-100 px-4 py-1.5 text-sm font-semibold text-green-800 shadow-sm">
-              <span className="flex h-2 w-2 rounded-full bg-green-600 mr-2 animate-pulse"></span>
-              Trusted by 5,000+ Farmers Across India
-            </div>
+
 
             <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-6xl md:text-7xl leading-tight">
               The Digital Ecosystem for{" "}
