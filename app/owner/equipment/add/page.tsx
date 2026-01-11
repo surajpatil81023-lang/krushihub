@@ -40,9 +40,7 @@ export default function AddEquipmentPage() {
                 name: formData.name,
                 type: formData.type,
                 rentPerDay: Number(formData.rentPerDay),
-                location: formData.location || currentUser.village + ", " + currentUser.district,
-                ownerId: currentUser.id,
-                available: true,
+                location: formData.location || (currentUser.village + ", " + currentUser.district),
             });
             setLoading(false);
             router.push("/owner/dashboard");

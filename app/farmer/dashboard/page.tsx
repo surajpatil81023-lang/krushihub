@@ -59,7 +59,7 @@ export default function FarmerDashboard() {
                     </CardHeader>
                     <CardContent>
                         <p className="text-green-700 mb-6">
-                            Search for skilled labourers in {currentUser.village}, {currentUser.district} and contact them directly.
+                            Search for skilled labourers in {currentUser.village || "your village"}, {currentUser.district || "your district"} and contact them directly.
                         </p>
                         <Button className="w-full md:w-auto bg-green-700 hover:bg-green-800" asChild>
                             <Link href="/farmer/labourers">

@@ -28,13 +28,14 @@ export default function LabourerEditProfile() {
             router.push("/auth/labour/login");
             return;
         }
+        const labourer = currentUser as any;
         setFormData({
-            name: currentUser.name,
-            village: currentUser.village,
-            district: currentUser.district,
-            expectedWage: currentUser.expectedWage.toString(),
+            name: labourer.name,
+            village: labourer.village || "",
+            district: labourer.district || "",
+            expectedWage: labourer.expectedWage?.toString() || "",
         });
-        setSelectedSkills(currentUser.skills);
+        setSelectedSkills(labourer.skills || []);
     }, [currentUser, router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

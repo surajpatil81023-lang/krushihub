@@ -25,7 +25,12 @@ export async function GET(req: Request) {
 
         const labourers = await User.find(query).select("-password").sort({ createdAt: -1 });
 
-        return NextResponse.json(labourers, { status: 200 });
+        const formattedLabourers = labourers.map(l => ({
+            ...l.toObject(),
+            id: l._id.toString()
+        }));
+
+        return NextResponse.json(formattedLabourers, { status: 200 });
     } catch (error) {
         console.error("Fetch Labourers Error:", error);
         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });

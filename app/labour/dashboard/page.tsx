@@ -20,6 +20,7 @@ export default function LabourerDashboard() {
     }, [currentUser, router]);
 
     if (!currentUser || currentUser.role !== "labourer") return null;
+    const labourer = currentUser as any; // Cast for now to access skills/wage safely in TS
 
     return (
         <div className="container mx-auto py-8 px-4">
@@ -41,19 +42,19 @@ export default function LabourerDashboard() {
                     <CardContent className="space-y-6">
                         <div>
                             <label className="text-sm font-medium text-gray-500">Full Name</label>
-                            <p className="text-xl font-semibold text-gray-900">{currentUser.name}</p>
+                            <p className="text-xl font-semibold text-gray-900">{labourer.name}</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label className="text-sm font-medium text-gray-500">Contact Number</label>
-                                <p className="text-lg text-gray-900">{currentUser.mobile}</p>
+                                <p className="text-lg text-gray-900">{labourer.mobile}</p>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-gray-500">Expected Daily Wage</label>
                                 <p className="text-lg text-green-700 font-bold flex items-center">
                                     <IndianRupee className="h-4 w-4 mr-1" />
-                                    {currentUser.expectedWage} / day
+                                    {labourer.expectedWage} / day
                                 </p>
                             </div>
                         </div>
@@ -62,14 +63,14 @@ export default function LabourerDashboard() {
                             <MapPin className="h-5 w-5 text-gray-400 mt-1" />
                             <div>
                                 <label className="text-sm font-medium text-gray-500">Location</label>
-                                <p className="text-lg text-gray-900">{currentUser.village}, {currentUser.district}</p>
+                                <p className="text-lg text-gray-900">{labourer.village}, {labourer.district}</p>
                             </div>
                         </div>
 
                         <div>
                             <label className="text-sm font-medium text-gray-500 mb-2 block">Skills</label>
                             <div className="flex flex-wrap gap-2">
-                                {currentUser.skills.map((skill) => (
+                                {labourer.skills?.map((skill: string) => (
                                     <span key={skill} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
                                         <Wrench className="h-3 w-3 mr-1" />
                                         {skill}
@@ -87,7 +88,7 @@ export default function LabourerDashboard() {
                     </CardHeader>
                     <CardContent>
                         <p className="text-blue-600">
-                            Your profile is visible to farmers in <strong>{currentUser.district}</strong>.
+                            Your profile is visible to farmers in <strong>{labourer.district}</strong>.
                         </p>
                         <div className="mt-4 p-4 bg-white rounded-lg border border-blue-100">
                             <p className="text-sm text-gray-500">Profile Views</p>
