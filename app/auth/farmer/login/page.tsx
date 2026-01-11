@@ -13,17 +13,23 @@ import { Tractor } from "lucide-react";
 export default function FarmerLoginPage() {
     const router = useRouter();
     const { login } = useApp();
-    const [mobile, setMobile] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         // Simulate API delay
-        setTimeout(() => {
-            login(mobile, "farmer");
-            setLoading(false);
-            router.push("/farmer/dashboard");
+        setTimeout(async () => {
+            try {
+                await login(email, "farmer", password);
+                setLoading(false);
+                router.push("/farmer/dashboard");
+            } catch (err) {
+                setLoading(false);
+                alert("Login failed");
+            }
         }, 1000);
     };
 
@@ -42,13 +48,24 @@ export default function FarmerLoginPage() {
                 <CardContent>
                     <form onSubmit={handleLogin} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="mobile">Mobile Number</Label>
+                            <Label htmlFor="email">Email Address</Label>
                             <Input
-                                id="mobile"
-                                type="tel"
-                                placeholder="9876543210"
-                                value={mobile}
-                                onChange={(e) => setMobile(e.target.value)}
+                                id="email"
+                                type="email"
+                                placeholder="rajesh@example.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="password">Password</Label>
+                            <Input
+                                id="password"
+                                type="password"
+                                placeholder="******"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
                         </div>

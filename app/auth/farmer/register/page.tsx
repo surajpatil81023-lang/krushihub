@@ -12,11 +12,13 @@ import { Tractor } from "lucide-react";
 
 export default function FarmerRegisterPage() {
     const router = useRouter();
-    const { registerFarmer } = useApp();
+    const { register } = useApp();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
+        email: "",
         mobile: "",
+        password: "",
         village: "",
         district: "",
     });
@@ -28,16 +30,24 @@ export default function FarmerRegisterPage() {
     const handleRegister = (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setTimeout(() => {
-            registerFarmer({
-                name: formData.name,
-                mobile: formData.mobile,
-                village: formData.village,
-                district: formData.district,
-                role: "farmer",
-            });
-            setLoading(false);
-            router.push("/farmer/dashboard");
+        // Simulating delay for effect
+        setTimeout(async () => {
+            try {
+                await register({
+                    name: formData.name,
+                    email: formData.email,
+                    mobile: formData.mobile,
+                    password: formData.password,
+                    village: formData.village,
+                    district: formData.district,
+                    role: "farmer",
+                });
+                setLoading(false);
+                router.push("/farmer/dashboard");
+            } catch (err) {
+                setLoading(false);
+                alert("Registration failed");
+            }
         }, 1000);
     };
 
@@ -60,6 +70,10 @@ export default function FarmerRegisterPage() {
                             <Input id="name" name="name" placeholder="Rajesh Kumar" value={formData.name} onChange={handleChange} required />
                         </div>
                         <div className="space-y-2">
+                            <Label htmlFor="email">Email Address</Label>
+                            <Input id="email" name="email" type="email" placeholder="rajesh@example.com" value={formData.email} onChange={handleChange} required />
+                        </div>
+                        <div className="space-y-2">
                             <Label htmlFor="mobile">Mobile Number</Label>
                             <Input id="mobile" name="mobile" type="tel" placeholder="9876543210" value={formData.mobile} onChange={handleChange} required />
                         </div>
@@ -72,6 +86,10 @@ export default function FarmerRegisterPage() {
                                 <Label htmlFor="district">District</Label>
                                 <Input id="district" name="district" placeholder="Pune" value={formData.district} onChange={handleChange} required />
                             </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="password">Password</Label>
+                            <Input id="password" name="password" type="password" placeholder="******" value={formData.password} onChange={handleChange} required />
                         </div>
                         <Button type="submit" className="w-full bg-green-700 hover:bg-green-800" disabled={loading}>
                             {loading ? "Creating Account..." : "Register"}

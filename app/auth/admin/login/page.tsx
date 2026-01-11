@@ -13,18 +13,24 @@ import { ShieldCheck } from "lucide-react";
 export default function AdminLoginPage() {
     const router = useRouter();
     const { login } = useApp();
-    const [mobile, setMobile] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         // Simulate API delay
-        setTimeout(() => {
-            login(mobile, "admin");
-            setLoading(false);
-            // We will create this page next
-            router.push("/admin/dashboard");
+        // Simulate API delay
+        setTimeout(async () => {
+            try {
+                await login(email, "admin", password);
+                setLoading(false);
+                router.push("/admin/dashboard");
+            } catch (err) {
+                setLoading(false);
+                alert("Login failed");
+            }
         }, 1000);
     };
 
@@ -43,15 +49,28 @@ export default function AdminLoginPage() {
                 <CardContent>
                     <form onSubmit={handleLogin} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="mobile">Mobile Number</Label>
-                            <Input
-                                id="mobile"
-                                type="tel"
-                                placeholder="9999999999"
-                                value={mobile}
-                                onChange={(e) => setMobile(e.target.value)}
-                                required
-                            />
+                            <div className="space-y-2">
+                                <Label htmlFor="email">Email Address</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="admin@krushihub.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="password">Password</Label>
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    placeholder="******"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                            </div>
                             <p className="text-xs text-gray-500">Use 9999999999 for demo</p>
                         </div>
                         <Button type="submit" className="w-full bg-red-600 hover:bg-red-700" disabled={loading}>

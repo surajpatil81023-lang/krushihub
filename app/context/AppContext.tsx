@@ -12,6 +12,7 @@ export type UserRole = "farmer" | "labourer" | "equipment_owner" | "admin" | "gu
 interface BaseUser {
     id: string;
     name: string;
+    email: string;
     mobile: string;
     village?: string;     // Optional for Admin/Guest
     district?: string;    // Optional for Admin/Guest
@@ -77,7 +78,7 @@ export interface MandiRecord {
 
 interface AppContextType {
     currentUser: User | null;
-    login: (mobile: string, role: string, password?: string) => Promise<void>;
+    login: (email: string, role: string, password?: string) => Promise<void>;
     register: (userData: any) => Promise<void>;
     logout: () => void;
 
@@ -99,6 +100,7 @@ interface AppContextType {
     updateBookingStatus: (bookingId: string, status: "approved" | "rejected") => Promise<void>;
 
     fetchMandiRecords: (crop?: string) => Promise<void>;
+    fetchRealTimeMandiRecords: (commodity?: string, state?: string) => Promise<MandiRecord[]>;
     addMandiRecord: (data: Omit<MandiRecord, "id">) => Promise<void>;
     deleteMandiRecord: (id: string) => Promise<void>;
 }
@@ -127,7 +129,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
     }, []);
 
-    const login = async (mobile: string, role: string, password?: string) => {
+    const login = async (email: string, role: string, password?: string) => {
         try {
             // For MVP, if password isn't provided in UI yet, we might fallback or error.
             // Assuming UI will update to send password. 
@@ -138,7 +140,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
             const data = await apiRequest("/api/auth/login", {
                 method: "POST",
-                body: JSON.stringify({ mobile, role, password: pwd }),
+                body: JSON.stringify({ email, role, password: pwd }),
             });
 
             setCurrentUser(data.user);
@@ -299,6 +301,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const fetchRealTimeMandiRecords = async (commodity?: string, state?: string): Promise<MandiRecord[]> => {
+        try {
+            const queryParams = new URLSearchParams();
+            if (commodity) queryParams.append("commodity", commodity);
+            if (state) queryParams.append("state", state);
+
+            const data = await apiRequest(`/api/mandi/realtime?${queryParams.toString()}`);
+            return data.records || [];
+        } catch (error) {
+            console.error("Failed to fetch realtime prices", error);
+            return [];
+        }
+    };
+
     const addMandiRecord = async (data: Omit<MandiRecord, "id">) => {
         try {
             await apiRequest("/api/mandi", {
@@ -347,6 +363,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 createBooking,
                 updateBookingStatus,
                 fetchMandiRecords,
+                fetchRealTimeMandiRecords,
                 addMandiRecord,
                 deleteMandiRecord,
             }}

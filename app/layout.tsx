@@ -5,7 +5,7 @@ import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 
 export const metadata: Metadata = {
-  title: "Krishi Hub - Labour Management",
+  title: "Krushi Hub - Farmer Management",
   description: "Connect Farmers and Labours seamlessly",
 };
 

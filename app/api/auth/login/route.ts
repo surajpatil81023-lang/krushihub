@@ -1,24 +1,26 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/app/lib/db";
 import User from "@/app/models/User";
-import bcrypt from "bcryptjs";
+// import bcrypt from "bcryptjs"; // Removed for plain text
 
 export async function POST(req: Request) {
     try {
-        const { mobile, password, role } = await req.json();
+        const { email, password, role } = await req.json();
 
-        if (!mobile || !password || !role) {
+        if (!email || !password || !role) {
             return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
         }
 
         await connectDB();
 
-        const user = await User.findOne({ mobile, role });
+        const user = await User.findOne({ email, role });
         if (!user) {
             return NextResponse.json({ message: "User not found or role mismatch" }, { status: 404 });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        // const isMatch = await bcrypt.compare(password, user.password); // Removed hashing
+        const isMatch = password === user.password; // Plain text check
+
         if (!isMatch) {
             return NextResponse.json({ message: "Invalid credentials" }, { status: 401 });
         }
@@ -28,6 +30,7 @@ export async function POST(req: Request) {
         const userWithoutPassword = {
             id: user._id.toString(),
             name: user.name,
+            email: user.email,
             mobile: user.mobile,
             role: user.role,
             village: user.village,

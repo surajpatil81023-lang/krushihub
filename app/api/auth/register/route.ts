@@ -1,29 +1,30 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/app/lib/db";
 import User from "@/app/models/User";
-import bcrypt from "bcryptjs";
+// import bcrypt from "bcryptjs"; // Removed for plain text
 
 export async function POST(req: Request) {
     try {
-        const { name, mobile, password, role, village, district, skills, expectedWage } = await req.json();
+        const { name, email, mobile, password, role, village, district, skills, expectedWage } = await req.json();
 
-        if (!name || !mobile || !password || !role) {
+        if (!name || !email || !mobile || !password || !role) {
             return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
         }
 
         await connectDB();
 
-        const existingUser = await User.findOne({ mobile });
+        const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return NextResponse.json({ message: "User already exists with this mobile number" }, { status: 409 });
+            return NextResponse.json({ message: "User already exists with this email" }, { status: 409 });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // const hashedPassword = await bcrypt.hash(password, 10); // Removed hashing
 
         const newUser = await User.create({
             name,
+            email,
             mobile,
-            password: hashedPassword,
+            password: password, // Storing plain text
             role,
             village,
             district,

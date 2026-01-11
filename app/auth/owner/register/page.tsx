@@ -12,11 +12,13 @@ import { Settings } from "lucide-react";
 
 export default function OwnerRegisterPage() {
     const router = useRouter();
-    const { registerOwner } = useApp();
+    const { register } = useApp();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
+        email: "",
         mobile: "",
+        password: "",
         village: "",
         district: "",
     });
@@ -28,14 +30,23 @@ export default function OwnerRegisterPage() {
     const handleRegister = (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setTimeout(() => {
-            registerOwner({
-                name: formData.name,
-                mobile: formData.mobile,
-                village: formData.village,
-                district: formData.district,
-                role: "equipment_owner",
-            });
+        setTimeout(async () => {
+            try {
+                await register({
+                    name: formData.name,
+                    email: formData.email,
+                    mobile: formData.mobile,
+                    password: formData.password,
+                    village: formData.village,
+                    district: formData.district,
+                    role: "equipment_owner",
+                });
+                setLoading(false);
+                router.push("/owner/dashboard");
+            } catch (err) {
+                setLoading(false);
+                alert("Registration failed");
+            }
             setLoading(false);
             router.push("/owner/dashboard");
         }, 1000);
@@ -60,6 +71,10 @@ export default function OwnerRegisterPage() {
                             <Input id="name" name="name" placeholder="Sanjay Tractor Services" value={formData.name} onChange={handleChange} required />
                         </div>
                         <div className="space-y-2">
+                            <Label htmlFor="email">Email Address</Label>
+                            <Input id="email" name="email" type="email" placeholder="sanjay@example.com" value={formData.email} onChange={handleChange} required />
+                        </div>
+                        <div className="space-y-2">
                             <Label htmlFor="mobile">Mobile Number</Label>
                             <Input id="mobile" name="mobile" type="tel" placeholder="9876543210" value={formData.mobile} onChange={handleChange} required />
                         </div>
@@ -72,6 +87,10 @@ export default function OwnerRegisterPage() {
                                 <Label htmlFor="district">District</Label>
                                 <Input id="district" name="district" placeholder="Pune" value={formData.district} onChange={handleChange} required />
                             </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="password">Password</Label>
+                            <Input id="password" name="password" type="password" placeholder="******" value={formData.password} onChange={handleChange} required />
                         </div>
                         <Button type="submit" className="w-full bg-orange-600 hover:bg-orange-700" disabled={loading}>
                             {loading ? "Creating Account..." : "Register"}

@@ -14,11 +14,13 @@ const SKILL_OPTIONS = ["Harvesting", "Sowing", "Spraying", "Weeding", "Ploughing
 
 export default function LabourerRegisterPage() {
     const router = useRouter();
-    const { registerLabourer } = useApp();
+    const { register } = useApp();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
+        email: "",
         mobile: "",
+        password: "",
         village: "",
         district: "",
         expectedWage: "",
@@ -42,16 +44,25 @@ export default function LabourerRegisterPage() {
             return;
         }
         setLoading(true);
-        setTimeout(() => {
-            registerLabourer({
-                name: formData.name,
-                mobile: formData.mobile,
-                village: formData.village,
-                district: formData.district,
-                role: "labourer",
-                skills: selectedSkills,
-                expectedWage: Number(formData.expectedWage),
-            });
+        setTimeout(async () => {
+            try {
+                await register({
+                    name: formData.name,
+                    email: formData.email,
+                    mobile: formData.mobile,
+                    password: formData.password,
+                    village: formData.village,
+                    district: formData.district,
+                    role: "labourer",
+                    skills: selectedSkills,
+                    expectedWage: Number(formData.expectedWage),
+                });
+                setLoading(false);
+                router.push("/labour/dashboard");
+            } catch (err) {
+                setLoading(false);
+                alert("Registration failed");
+            }
             setLoading(false);
             router.push("/labour/dashboard");
         }, 1000);
@@ -76,6 +87,10 @@ export default function LabourerRegisterPage() {
                             <Input id="name" name="name" placeholder="Suresh Patil" value={formData.name} onChange={handleChange} required />
                         </div>
                         <div className="space-y-2">
+                            <Label htmlFor="email">Email Address</Label>
+                            <Input id="email" name="email" type="email" placeholder="suresh@example.com" value={formData.email} onChange={handleChange} required />
+                        </div>
+                        <div className="space-y-2">
                             <Label htmlFor="mobile">Mobile Number</Label>
                             <Input id="mobile" name="mobile" type="tel" placeholder="9876543210" value={formData.mobile} onChange={handleChange} required />
                         </div>
@@ -88,6 +103,10 @@ export default function LabourerRegisterPage() {
                                 <Label htmlFor="district">District</Label>
                                 <Input id="district" name="district" placeholder="Nashik" value={formData.district} onChange={handleChange} required />
                             </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="password">Password</Label>
+                            <Input id="password" name="password" type="password" placeholder="******" value={formData.password} onChange={handleChange} required />
                         </div>
 
                         <div className="space-y-2">
