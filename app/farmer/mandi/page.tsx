@@ -2,215 +2,203 @@
 
 import { useApp } from "@/app/context/AppContext";
 import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Search, MapPin, CalendarDays, TrendingUp, Filter } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { cn } from "@/app/lib/utils";
+import { SearchableSelect } from "@/app/components/ui/custom-combobox";
+
+// Common lists for dropdowns
+const POPULAR_CROPS = [
+    { value: "Onion", label: "Onion" },
+    { value: "Potato", label: "Potato" },
+    { value: "Tomato", label: "Tomato" },
+    { value: "Wheat", label: "Wheat" },
+    { value: "Rice", label: "Rice" },
+    { value: "Cotton", label: "Cotton" },
+    { value: "Maize", label: "Maize" },
+    { value: "Soybean", label: "Soybean" },
+    { value: "Banana", label: "Banana" },
+    { value: "Garlic", label: "Garlic" },
+];
+
+const STATES = [
+    { value: "Maharashtra", label: "Maharashtra" },
+    { value: "Gujarat", label: "Gujarat" },
+    { value: "Punjab", label: "Punjab" },
+    { value: "Karnataka", label: "Karnataka" },
+    { value: "Madhya Pradesh", label: "Madhya Pradesh" },
+    { value: "Uttar Pradesh", label: "Uttar Pradesh" },
+    { value: "Rajasthan", label: "Rajasthan" },
+    { value: "Haryana", label: "Haryana" },
+    { value: "Telangana", label: "Telangana" },
+    { value: "Andhra Pradesh", label: "Andhra Pradesh" },
+];
+
+const QUICK_FILTERS = ["Onion", "Tomato", "Potato", "Rice", "Wheat", "Cotton"];
 
 export default function MandiPricesPage() {
-    const { mandiRecords, fetchRealTimeMandiRecords } = useApp();
-    const [searchQuery, setSearchQuery] = useState("");
+    const { fetchRealTimeMandiRecords } = useApp();
 
-    // Live Search State
-    const [isLiveMode, setIsLiveMode] = useState(false);
-    const [liveCommodity, setLiveCommodity] = useState("");
-    const [liveState, setLiveState] = useState("");
-    const [liveRecords, setLiveRecords] = useState<any[]>([]); // Using any for flexibility or MandiRecord if adapted
-    const [loadingLive, setLoadingLive] = useState(false);
-    const [hasSearchedLive, setHasSearchedLive] = useState(false);
+    // Search State
+    const [selectedCommodity, setSelectedCommodity] = useState("");
+    const [selectedState, setSelectedState] = useState("");
+    const [records, setRecords] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
 
-    const filteredRecords = useMemo(() => {
-        return mandiRecords.filter(item =>
-            item.cropName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.location.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    }, [mandiRecords, searchQuery]);
+    const handleSearch = async (commodity: string, state: string) => {
+        if (!commodity) return;
+        setLoading(true);
+        setHasSearched(true);
+        const data = await fetchRealTimeMandiRecords(commodity, state);
+        setRecords(data);
+        setLoading(false);
+    };
 
-    const handleLiveSearch = async (e: React.FormEvent) => {
+    const handleQuickFilter = (crop: string) => {
+        setSelectedCommodity(crop);
+        // If state is already selected, search immediately, else just set crop
+        if (selectedState) {
+            handleSearch(crop, selectedState);
+        } else {
+            // Optional: Search with just crop? The API supports it.
+            handleSearch(crop, "");
+        }
+    };
+
+    const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setLoadingLive(true);
-        setHasSearchedLive(true);
-        const data = await fetchRealTimeMandiRecords(liveCommodity, liveState);
-        setLiveRecords(data);
-        setLoadingLive(false);
+        handleSearch(selectedCommodity, selectedState);
     };
 
     return (
         <div className="container mx-auto py-8 px-4">
-            <div className="mb-8 space-y-4">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
-                            <TrendingUp className="h-8 w-8 text-green-600" />
-                            {isLiveMode ? "Live Government Rates" : "Mandi Prices"}
-                        </h1>
-                        <p className="text-gray-500">
-                            {isLiveMode
-                                ? "Real-time data from api.data.gov.in"
-                                : "Locally saved market rates for your crops."}
-                        </p>
-                    </div>
-                    <Button
-                        onClick={() => setIsLiveMode(!isLiveMode)}
-                        variant={isLiveMode ? "secondary" : "default"}
-                        className={isLiveMode ? "bg-gray-200 text-gray-800 hover:bg-gray-300" : "bg-green-600 hover:bg-green-700"}
-                    >
-                        {isLiveMode ? "View Saved Records" : "Check Live Rates"}
-                    </Button>
+            <div className="mb-8 space-y-6">
+                <div className="text-center md:text-left">
+                    <h1 className="text-3xl font-bold text-gray-800 flex items-center justify-center md:justify-start gap-2">
+                        <TrendingUp className="h-8 w-8 text-green-600" /> Mandi Rates
+                    </h1>
+                    <p className="text-gray-500 mt-1">Check real-time government mandi prices for your crops.</p>
                 </div>
 
-                {isLiveMode ? (
-                    /* Live Mode Search */
-                    <Card className="border-green-100 shadow-sm">
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-lg text-green-800">Search Live Market Data</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={handleLiveSearch} className="flex flex-col md:flex-row gap-4 items-end">
-                                <div className="space-y-2 flex-1 w-full">
-                                    <label className="text-sm font-medium">Crop Name (Commodity)</label>
-                                    <Input
-                                        placeholder="e.g. Onion, Wheat, Rice"
-                                        value={liveCommodity}
-                                        onChange={e => setLiveCommodity(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div className="space-y-2 flex-1 w-full">
-                                    <label className="text-sm font-medium">State</label>
-                                    <Input
-                                        placeholder="e.g. Maharashtra, Punjab"
-                                        value={liveState}
-                                        onChange={e => setLiveState(e.target.value)}
-                                    />
-                                </div>
-                                <Button type="submit" disabled={loadingLive} className="bg-blue-600 hover:bg-blue-700 min-w-[120px]">
-                                    {loadingLive ? "Fetching..." : "Get Prices"}
-                                </Button>
-                            </form>
-                        </CardContent>
-                    </Card>
-                ) : (
-                    /* Local Search */
-                    <div className="bg-white p-4 rounded-lg shadow-sm border max-w-md">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                            <Input
-                                placeholder="Search crop or mandi..."
-                                className="pl-9"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                )}
+                {/* Quick Filters */}
+                <div className="flex flex-wrap gap-2">
+                    {QUICK_FILTERS.map((crop) => (
+                        <button
+                            key={crop}
+                            onClick={() => handleQuickFilter(crop)}
+                            className={cn(
+                                "px-4 py-2 rounded-full text-sm font-medium transition-colors border",
+                                selectedCommodity === crop
+                                    ? "bg-green-600 text-white border-green-600 shadow-sm"
+                                    : "bg-white text-gray-700 border-gray-200 hover:bg-green-50 hover:border-green-200"
+                            )}
+                        >
+                            {crop}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Search Inputs */}
+                <Card className="border-green-100 shadow-sm bg-white">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-lg text-green-800">Find Market Prices</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <form onSubmit={onSubmit} className="flex flex-col md:flex-row gap-4 items-end">
+                            <div className="space-y-2 flex-1 w-full relative z-20">
+                                <label className="text-sm font-medium text-gray-700">Crop (Commodity)</label>
+                                <SearchableSelect
+                                    options={POPULAR_CROPS}
+                                    value={selectedCommodity}
+                                    onChange={setSelectedCommodity}
+                                    placeholder="Select Crop..."
+                                    searchPlaceholder="Search crops..."
+                                />
+                            </div>
+                            <div className="space-y-2 flex-1 w-full relative z-10">
+                                <label className="text-sm font-medium text-gray-700">State</label>
+                                <SearchableSelect
+                                    options={STATES}
+                                    value={selectedState}
+                                    onChange={setSelectedState}
+                                    placeholder="Select State (Optional)..."
+                                    searchPlaceholder="Search states..."
+                                />
+                            </div>
+                            <Button
+                                type="submit"
+                                disabled={loading}
+                                className="bg-green-600 hover:bg-green-700 min-w-[140px] h-10"
+                            >
+                                {loading ? "Fetching..." : "Search Rates"}
+                            </Button>
+                        </form>
+                    </CardContent>
+                </Card>
             </div>
 
-            {/* Results Grid - Live or Local */}
-            {isLiveMode ? (
-                /* Live Results */
-                <div className="space-y-6">
-                    {hasSearchedLive && liveRecords.length === 0 && !loadingLive && (
-                        <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg border border-dashed">
-                            <Filter className="h-10 w-10 mx-auto mb-3 opacity-50" />
-                            <p>No live records found for "{liveCommodity}" in "{liveState}".</p>
-                            <p className="text-sm mt-1">Try a different crop spelling or state.</p>
-                        </div>
-                    )}
-
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {liveRecords.map((record) => (
-                            <Card key={record.id} className="hover:shadow-md transition-shadow border-blue-100">
-                                <CardHeader className="pb-2">
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <CardTitle className="text-xl font-bold text-blue-800">{record.cropName}</CardTitle>
-                                            <div className="flex items-center text-sm text-gray-500 mt-1">
-                                                <MapPin className="h-4 w-4 mr-1 text-gray-400" />
-                                                {record.location}
-                                            </div>
-                                        </div>
-                                        <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full flex items-center border border-blue-100">
-                                            <CalendarDays className="h-3 w-3 mr-1" />
-                                            {record.date}
-                                        </div>
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="grid grid-cols-3 gap-2 py-3 bg-blue-50/50 rounded-lg text-center mt-2">
-                                        <div>
-                                            <p className="text-xs text-gray-500 uppercase font-semibold">Min</p>
-                                            <p className="font-semibold text-gray-700">₹{record.minPrice}</p>
-                                        </div>
-                                        <div className="border-x border-blue-100">
-                                            <p className="text-xs text-gray-500 uppercase font-semibold">Modal</p>
-                                            <p className="font-bold text-blue-700 text-lg">₹{record.modalPrice}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs text-gray-500 uppercase font-semibold">Max</p>
-                                            <p className="font-semibold text-gray-700">₹{record.maxPrice}</p>
-                                        </div>
-                                    </div>
-                                    <p className="text-[10px] text-right text-gray-400 mt-2">Source: Gov API</p>
-                                </CardContent>
-                            </Card>
-                        ))}
+            {/* Results Grid */}
+            <div className="space-y-6">
+                {hasSearched && records.length === 0 && !loading && (
+                    <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                        <Filter className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                        <p className="text-lg font-medium">No records found</p>
+                        <p className="text-sm mt-1">We couldn't find live data for "{selectedCommodity}" {selectedState ? `in ${selectedState}` : ""}.</p>
                     </div>
-                </div>
-            ) : (
-                /* Local Results */
+                )}
+
+                {!hasSearched && (
+                    <div className="text-center py-12 text-gray-400 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                        <Search className="h-10 w-10 mx-auto mb-3 opacity-30" />
+                        <p>Select a crop and state to see current market prices.</p>
+                    </div>
+                )}
+
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredRecords.map((record) => (
-                        <Card key={record.id} className="hover:shadow-md transition-shadow border-green-50">
-                            <CardHeader className="pb-2">
+                    {records.map((record) => (
+                        <Card key={record.id} className="hover:shadow-md transition-all duration-200 border-green-50 group">
+                            <CardHeader className="pb-3 border-b border-gray-50">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <CardTitle className="text-xl font-bold text-green-800">{record.cropName}</CardTitle>
+                                        <CardTitle className="text-xl font-bold text-gray-800 group-hover:text-green-700 transition-colors">
+                                            {record.cropName}
+                                        </CardTitle>
                                         <div className="flex items-center text-sm text-gray-500 mt-1">
-                                            <MapPin className="h-4 w-4 mr-1 text-gray-400" />
+                                            <MapPin className="h-3.5 w-3.5 mr-1 text-green-500" />
                                             {record.location}
                                         </div>
                                     </div>
-                                    <div className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-full flex items-center">
+                                    <div className="text-xs font-medium text-green-700 bg-green-50 px-2.5 py-1 rounded-full flex items-center border border-green-100">
                                         <CalendarDays className="h-3 w-3 mr-1" />
                                         {record.date}
                                     </div>
                                 </div>
                             </CardHeader>
-                            <CardContent>
-                                <div className="grid grid-cols-3 gap-2 py-3 bg-green-50/50 rounded-lg text-center mt-2">
-                                    <div>
-                                        <p className="text-xs text-gray-500 uppercase font-semibold">Min</p>
+                            <CardContent className="pt-4">
+                                <div className="grid grid-cols-3 gap-2 py-3 bg-gray-50 rounded-lg text-center">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Min</p>
                                         <p className="font-semibold text-gray-700">₹{record.minPrice}</p>
                                     </div>
-                                    <div className="border-x border-green-100">
-                                        <p className="text-xs text-gray-500 uppercase font-semibold">Modal</p>
+                                    <div className="space-y-1 border-x border-gray-200">
+                                        <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Modal</p>
                                         <p className="font-bold text-green-700 text-lg">₹{record.modalPrice}</p>
                                     </div>
-                                    <div>
-                                        <p className="text-xs text-gray-500 uppercase font-semibold">Max</p>
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Max</p>
                                         <p className="font-semibold text-gray-700">₹{record.maxPrice}</p>
                                     </div>
+                                </div>
+                                <div className="mt-4 flex justify-end">
+                                    <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded">Gov. Data</span>
                                 </div>
                             </CardContent>
                         </Card>
                     ))}
-
-                    {filteredRecords.length === 0 && (
-                        <div className="col-span-full text-center py-12 text-gray-500">
-                            <Filter className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                            <p className="text-lg">No saved prices found.</p>
-                            <Button
-                                variant="link"
-                                onClick={() => setSearchQuery("")}
-                            >
-                                Clear Filters
-                            </Button>
-                        </div>
-                    )}
                 </div>
-            )}
+            </div>
         </div>
     );
 }
