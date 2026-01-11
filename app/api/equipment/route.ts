@@ -102,3 +102,34 @@ export async function DELETE(req: Request) {
         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
     }
 }
+
+export async function PUT(req: Request) {
+    try {
+        const body = await req.json();
+        const { id, available, ...updates } = body;
+
+        if (!id) {
+            return NextResponse.json({ message: "Equipment ID is required" }, { status: 400 });
+        }
+
+        await connectDB();
+
+        const updatedEquipment = await Equipment.findByIdAndUpdate(
+            id,
+            { available, ...updates },
+            { new: true }
+        );
+
+        if (!updatedEquipment) {
+            return NextResponse.json({ message: "Equipment not found" }, { status: 404 });
+        }
+
+        return NextResponse.json(
+            { message: "Equipment updated", equipment: { ...updatedEquipment.toObject(), id: updatedEquipment._id } },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Update Equipment Error:", error);
+        return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+    }
+}

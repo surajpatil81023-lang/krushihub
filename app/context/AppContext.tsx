@@ -95,6 +95,7 @@ interface AppContextType {
     fetchEquipment: (filters?: any) => Promise<void>;
     addEquipment: (data: Omit<Equipment, "id" | "ownerId" | "owner" | "available">) => Promise<void>;
     deleteEquipment: (id: string) => Promise<void>;
+    toggleAvailability: (id: string) => Promise<void>;
 
     createBooking: (equipmentId: string, date: string) => Promise<void>;
     updateBookingStatus: (bookingId: string, status: "approved" | "rejected") => Promise<void>;
@@ -239,6 +240,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const toggleAvailability = async (id: string) => {
+        try {
+            const item = equipment.find(e => e.id === id);
+            if (!item) return;
+
+            const res = await apiRequest("/api/equipment", {
+                method: "PUT",
+                body: JSON.stringify({ id, available: !item.available }),
+            });
+
+            setEquipment(prev => prev.map(e => e.id === id ? { ...e, available: res.equipment.available } : e));
+        } catch (error) {
+            console.error("Failed to toggle availability", error);
+            alert("Action failed");
+        }
+    };
+
     // --- Bookings ---
 
     const createBooking = async (equipmentId: string, date: string) => {
@@ -360,6 +378,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 fetchEquipment,
                 addEquipment,
                 deleteEquipment,
+                toggleAvailability,
                 createBooking,
                 updateBookingStatus,
                 fetchMandiRecords,
