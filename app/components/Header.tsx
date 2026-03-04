@@ -79,11 +79,16 @@ export function Header() {
                             onClick={closeMenus}
                         >
                             <div className="relative">
-                                <div className="absolute inset-0 bg-green-600 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity" />
-                                <div className="relative bg-gradient-to-br from-green-500 to-emerald-600 p-2 rounded-xl shadow-lg shadow-green-600/20">
-                                    <Sprout className="h-5 w-5 text-white" />
-                                </div>
+
+
+                                <img
+                                    src="/logo.jpeg"
+                                    alt="Krushi Hub Logo"
+                                    className="h-15 w-20 object-contain"
+                                />
+
                             </div>
+
                             <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                                 Krushi Hub
                             </span>
@@ -107,7 +112,7 @@ export function Header() {
                                 <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-green-600 transition-all duration-300 group-hover:w-1/2 group-hover:left-1/4" />
                             </Link>
                             <Link
-                                href="/farmer/equipment"
+                                href="/farmer"
                                 className="relative px-4 py-2 text-sm font-medium text-gray-600 hover:text-green-600 rounded-lg transition-all duration-200 hover:bg-green-50/50 group"
                             >
                                 Marketplace

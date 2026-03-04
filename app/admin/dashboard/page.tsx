@@ -12,7 +12,6 @@ import { cn } from "@/app/lib/utils";
 export default function AdminDashboard() {
     const { currentUser, mandiRecords, deleteMandiRecord } = useApp();
     const router = useRouter();
-
     useEffect(() => {
         if (!currentUser || currentUser.role !== "admin") {
             router.push("/auth/admin/login");
