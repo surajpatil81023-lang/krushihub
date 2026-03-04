@@ -20,7 +20,7 @@ export function Footer() {
                                 </div>
                             </div>
                             <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                                Krishi Hub
+                            Krushi Hub
                             </span>
                         </Link>
                         <p className="text-gray-600 max-w-sm leading-relaxed text-sm">
@@ -43,36 +43,7 @@ export function Footer() {
                         </div>
 
                         {/* Social Media */}
-                        <div className="flex gap-3 pt-2">
-                            <a
-                                href="#"
-                                className="p-2.5 rounded-xl bg-white border border-gray-200 text-gray-600 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md"
-                                aria-label="Facebook"
-                            >
-                                <Facebook className="h-5 w-5" />
-                            </a>
-                            <a
-                                href="#"
-                                className="p-2.5 rounded-xl bg-white border border-gray-200 text-gray-600 hover:text-blue-400 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md"
-                                aria-label="Twitter"
-                            >
-                                <Twitter className="h-5 w-5" />
-                            </a>
-                            <a
-                                href="#"
-                                className="p-2.5 rounded-xl bg-white border border-gray-200 text-gray-600 hover:text-pink-600 hover:border-pink-300 hover:bg-pink-50 transition-all duration-200 shadow-sm hover:shadow-md"
-                                aria-label="Instagram"
-                            >
-                                <Instagram className="h-5 w-5" />
-                            </a>
-                            <a
-                                href="#"
-                                className="p-2.5 rounded-xl bg-white border border-gray-200 text-gray-600 hover:text-blue-700 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md"
-                                aria-label="LinkedIn"
-                            >
-                                <Linkedin className="h-5 w-5" />
-                            </a>
-                        </div>
+                      
                     </div>
 
                     {/* Quick Links Column */}

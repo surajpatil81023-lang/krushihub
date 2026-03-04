@@ -48,6 +48,7 @@ export async function GET(req: Request) {
             modalPrice: Number(r.modal_price),
             location: `${r.market}, ${r.district}, ${r.state}`,
             date: r.arrival_date,
+            unit: r.unit || "Quintal",
             source: "GOV_API"
         }));
 

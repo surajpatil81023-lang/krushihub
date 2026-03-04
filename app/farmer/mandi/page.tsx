@@ -180,15 +180,15 @@ export default function MandiPricesPage() {
                                 <div className="grid grid-cols-3 gap-2 py-3 bg-gray-50 rounded-lg text-center">
                                     <div className="space-y-1">
                                         <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Min</p>
-                                        <p className="font-semibold text-gray-700">₹{record.minPrice}</p>
+                                        <p className="font-semibold text-gray-700">₹{record.minPrice}<span className="text-[10px] text-gray-400 font-normal">/{record.unit || 'Quintal'}</span></p>
                                     </div>
                                     <div className="space-y-1 border-x border-gray-200">
                                         <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Modal</p>
-                                        <p className="font-bold text-green-700 text-lg">₹{record.modalPrice}</p>
+                                        <p className="font-bold text-green-700 text-lg">₹{record.modalPrice}<span className="text-[10px] text-gray-400 font-normal">/{record.unit || 'Quintal'}</span></p>
                                     </div>
                                     <div className="space-y-1">
                                         <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Max</p>
-                                        <p className="font-semibold text-gray-700">₹{record.maxPrice}</p>
+                                        <p className="font-semibold text-gray-700">₹{record.maxPrice}<span className="text-[10px] text-gray-400 font-normal">/{record.unit || 'Quintal'}</span></p>
                                     </div>
                                 </div>
                                 <div className="mt-4 flex justify-end">

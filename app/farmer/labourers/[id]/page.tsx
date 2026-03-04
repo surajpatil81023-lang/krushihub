@@ -47,7 +47,7 @@ export default function LabourerDetailPage() {
                         <div className="absolute -top-12 left-6 h-24 w-24 rounded-full border-4 border-white bg-white flex items-center justify-center shadow-sm">
                             <span className="text-3xl font-bold text-green-800">{labourer.name.charAt(0)}</span>
                         </div>
-                        <div className="mt-14 mb-6">
+                        <div className="pt-16 mb-6">
                             <h1 className="text-3xl font-bold text-gray-900">{labourer.name}</h1>
                             <p className="text-gray-500 flex items-center mt-1">
                                 <MapPin className="h-4 w-4 mr-1" /> {labourer.village}, {labourer.district}
@@ -102,7 +102,7 @@ export default function LabourerDetailPage() {
                             </a>
 
                             <p className="text-xs text-center text-gray-400">
-                                Mention "Krishi Hub" when you call.
+                                Mention "Krushi Hub" when you call.
                             </p>
                         </CardContent>
                     </Card>

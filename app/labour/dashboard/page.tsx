@@ -3,14 +3,16 @@
 import { useApp } from "@/app/context/AppContext";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { MapPin, IndianRupee, Wrench, Edit } from "lucide-react";
+import { MapPin, IndianRupee, Wrench, Edit, Trash2, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function LabourerDashboard() {
-    const { currentUser } = useApp();
+    const { currentUser, deleteAccount } = useApp();
     const router = useRouter();
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     // Protect route
     useEffect(() => {
@@ -26,11 +28,20 @@ export default function LabourerDashboard() {
         <div className="container mx-auto py-8 px-4">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold text-gray-800">My Dashboard</h1>
-                <Button variant="outline" className="flex gap-2" asChild>
-                    <Link href="/labour/profile/edit">
-                        <Edit className="h-4 w-4" /> Edit Profile
-                    </Link>
-                </Button>
+                <div className="flex gap-2">
+                    <Button variant="outline" className="flex gap-2" asChild>
+                        <Link href="/labour/profile/edit">
+                            <Edit className="h-4 w-4" /> Edit Profile
+                        </Link>
+                    </Button>
+                    <Button
+                        variant="outline"
+                        className="flex gap-2 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+                        onClick={() => setShowDeleteModal(true)}
+                    >
+                        <Trash2 className="h-4 w-4" /> Delete Account
+                    </Button>
+                </div>
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
@@ -97,6 +108,45 @@ export default function LabourerDashboard() {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Delete Account Confirmation Modal */}
+            {showDeleteModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 border border-red-100">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="bg-red-100 p-2 rounded-full">
+                                <AlertTriangle className="h-6 w-6 text-red-600" />
+                            </div>
+                            <h2 className="text-xl font-bold text-gray-800">Delete Account</h2>
+                        </div>
+                        <p className="text-gray-600 mb-2">Are you sure you want to delete your account?</p>
+                        <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg p-3 mb-6">
+                            ⚠️ This will <strong>permanently delete</strong> your account and all related data. This action <strong>cannot be undone</strong>.
+                        </p>
+                        <div className="flex gap-3 justify-end">
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowDeleteModal(false)}
+                                disabled={deleting}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                className="bg-red-600 hover:bg-red-700 text-white flex gap-2"
+                                onClick={async () => {
+                                    setDeleting(true);
+                                    await deleteAccount();
+                                    setDeleting(false);
+                                }}
+                                disabled={deleting}
+                            >
+                                <Trash2 className="h-4 w-4" />
+                                {deleting ? "Deleting..." : "Delete My Account"}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

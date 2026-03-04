@@ -3,15 +3,17 @@
 import { useApp } from "@/app/context/AppContext";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/app/components/ui/card";
-import { Plus, Trash2, Power, CalendarClock, User as UserIcon, Check, X } from "lucide-react";
+import { Plus, Trash2, Power, CalendarClock, User as UserIcon, Check, X, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/app/lib/utils";
 
 export default function OwnerDashboard() {
-    const { currentUser, equipment, deleteEquipment, toggleAvailability, bookings, updateBookingStatus } = useApp();
+    const { currentUser, equipment, deleteEquipment, toggleAvailability, bookings, updateBookingStatus, deleteAccount } = useApp();
     const router = useRouter();
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         if (!currentUser || currentUser.role !== "equipment_owner") {
@@ -31,11 +33,20 @@ export default function OwnerDashboard() {
                     <h1 className="text-3xl font-bold text-gray-800">Owner Dashboard</h1>
                     <p className="text-gray-500">Manage your equipment and rental requests.</p>
                 </div>
-                <Button className="bg-orange-600 hover:bg-orange-700 flex gap-2" asChild>
-                    <Link href="/owner/equipment/add">
-                        <Plus className="h-4 w-4" /> Add Equipment
-                    </Link>
-                </Button>
+                <div className="flex gap-2">
+                    <Button className="bg-orange-600 hover:bg-orange-700 flex gap-2" asChild>
+                        <Link href="/owner/equipment/add">
+                            <Plus className="h-4 w-4" /> Add Equipment
+                        </Link>
+                    </Button>
+                    <Button
+                        variant="outline"
+                        className="flex gap-2 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+                        onClick={() => setShowDeleteModal(true)}
+                    >
+                        <Trash2 className="h-4 w-4" /> Delete Account
+                    </Button>
+                </div>
             </div>
 
             <div className="grid lg:grid-cols-2 gap-8">
@@ -159,6 +170,45 @@ export default function OwnerDashboard() {
                     )}
                 </div>
             </div>
+
+            {/* Delete Account Confirmation Modal */}
+            {showDeleteModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 border border-red-100">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="bg-red-100 p-2 rounded-full">
+                                <AlertTriangle className="h-6 w-6 text-red-600" />
+                            </div>
+                            <h2 className="text-xl font-bold text-gray-800">Delete Account</h2>
+                        </div>
+                        <p className="text-gray-600 mb-2">Are you sure you want to delete your account?</p>
+                        <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg p-3 mb-6">
+                            ⚠️ This will <strong>permanently delete</strong> your account and all related data. This action <strong>cannot be undone</strong>.
+                        </p>
+                        <div className="flex gap-3 justify-end">
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowDeleteModal(false)}
+                                disabled={deleting}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                className="bg-red-600 hover:bg-red-700 text-white flex gap-2"
+                                onClick={async () => {
+                                    setDeleting(true);
+                                    await deleteAccount();
+                                    setDeleting(false);
+                                }}
+                                disabled={deleting}
+                            >
+                                <Trash2 className="h-4 w-4" />
+                                {deleting ? "Deleting..." : "Delete My Account"}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

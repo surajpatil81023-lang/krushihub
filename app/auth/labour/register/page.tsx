@@ -27,22 +27,68 @@ export default function LabourerRegisterPage() {
     });
     const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
 
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
+    const validate = () => {
+        const newErrors: Record<string, string> = {};
+        if (!formData.name.trim()) newErrors.name = "Name is required";
+        if (!formData.email.trim()) {
+            newErrors.email = "Email is required";
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = "Email is invalid";
+        }
+        if (!formData.mobile.trim()) {
+            newErrors.mobile = "Mobile number is required";
+        } else if (formData.mobile.length !== 10) {
+            newErrors.mobile = "Mobile number must be exactly 10 digits";
+        }
+        if (!formData.village.trim()) newErrors.village = "Village is required";
+        if (!formData.district.trim()) newErrors.district = "District is required";
+        if (!formData.password) {
+            newErrors.password = "Password is required";
+        } else if (formData.password.length < 6) {
+            newErrors.password = "Password must be at least 6 characters";
+        }
+        if (!formData.expectedWage) {
+            newErrors.expectedWage = "Expected Wage is required";
+        } else if (Number(formData.expectedWage) <= 0) {
+            newErrors.expectedWage = "Wage must be greater than 0";
+        }
+        if (selectedSkills.length === 0) {
+            newErrors.skills = "Please select at least one skill";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        if (name === "mobile") {
+            const onlyNums = value.replace(/[^0-9]/g, "");
+            if (onlyNums.length <= 10) {
+                setFormData({ ...formData, [name]: onlyNums });
+            }
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
+        if (errors[name]) {
+            setErrors({ ...errors, [name]: "" });
+        }
     };
 
     const toggleSkill = (skill: string) => {
         setSelectedSkills(prev =>
             prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill]
         );
+        if (errors.skills) {
+            setErrors({ ...errors, skills: "" });
+        }
     };
 
     const handleRegister = (e: React.FormEvent) => {
         e.preventDefault();
-        if (selectedSkills.length === 0) {
-            alert("Please select at least one skill");
-            return;
-        }
+        if (!validate()) return;
         setLoading(true);
         setTimeout(async () => {
             try {
@@ -84,29 +130,35 @@ export default function LabourerRegisterPage() {
                     <form onSubmit={handleRegister} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Full Name</Label>
-                            <Input id="name" name="name" placeholder="Suresh Patil" value={formData.name} onChange={handleChange} required />
+                            <Input id="name" name="name" placeholder="Suresh Patil" value={formData.name} onChange={handleChange} />
+                            {errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email Address</Label>
-                            <Input id="email" name="email" type="email" placeholder="suresh@example.com" value={formData.email} onChange={handleChange} required />
+                            <Input id="email" name="email" type="email" placeholder="suresh@example.com" value={formData.email} onChange={handleChange} />
+                            {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="mobile">Mobile Number</Label>
-                            <Input id="mobile" name="mobile" type="tel" placeholder="9876543210" value={formData.mobile} onChange={handleChange} required />
+                            <Input id="mobile" name="mobile" type="tel" placeholder="9876543210" value={formData.mobile} onChange={handleChange} />
+                            {errors.mobile && <p className="text-red-500 text-xs">{errors.mobile}</p>}
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="village">Village</Label>
-                                <Input id="village" name="village" placeholder="Sonpur" value={formData.village} onChange={handleChange} required />
+                                <Input id="village" name="village" placeholder="Sonpur" value={formData.village} onChange={handleChange} />
+                                {errors.village && <p className="text-red-500 text-xs">{errors.village}</p>}
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="district">District</Label>
-                                <Input id="district" name="district" placeholder="Nashik" value={formData.district} onChange={handleChange} required />
+                                <Input id="district" name="district" placeholder="Nashik" value={formData.district} onChange={handleChange} />
+                                {errors.district && <p className="text-red-500 text-xs">{errors.district}</p>}
                             </div>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="password">Password</Label>
-                            <Input id="password" name="password" type="password" placeholder="******" value={formData.password} onChange={handleChange} required />
+                            <Input id="password" name="password" type="password" placeholder="******" value={formData.password} onChange={handleChange} />
+                            {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
                         </div>
 
                         <div className="space-y-2">
@@ -127,11 +179,13 @@ export default function LabourerRegisterPage() {
                                     </div>
                                 ))}
                             </div>
+                            {errors.skills && <p className="text-red-500 text-xs">{errors.skills}</p>}
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="expectedWage">Expected Daily Wage (₹)</Label>
-                            <Input id="expectedWage" name="expectedWage" type="number" placeholder="500" value={formData.expectedWage} onChange={handleChange} required />
+                            <Input id="expectedWage" name="expectedWage" type="number" placeholder="500" value={formData.expectedWage} onChange={handleChange} />
+                            {errors.expectedWage && <p className="text-red-500 text-xs">{errors.expectedWage}</p>}
                         </div>
 
                         <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={loading}>

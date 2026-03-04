@@ -74,6 +74,7 @@ export interface MandiRecord {
     modalPrice: number;
     location: string;
     date: string;
+    unit?: string;
 }
 
 interface AppContextType {
@@ -81,6 +82,7 @@ interface AppContextType {
     login: (email: string, role: string, password?: string) => Promise<void>;
     register: (userData: any) => Promise<void>;
     logout: () => void;
+    deleteAccount: () => Promise<void>;
 
     // Data access
     labourers: LabourerProfile[];
@@ -172,6 +174,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setCurrentUser(null);
         Cookies.remove("user");
         window.location.href = "/";
+    };
+
+    const deleteAccount = async () => {
+        if (!currentUser) return;
+        try {
+            await apiRequest(`/api/auth/user?userId=${currentUser.id}`, { method: "DELETE" });
+            logout();
+        } catch (error) {
+            console.error("Failed to delete account", error);
+            alert("Failed to delete account: " + (error as Error).message);
+        }
     };
 
     // --- Labourers ---
@@ -369,6 +382,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 login,
                 register,
                 logout,
+                deleteAccount,
                 labourers,
                 equipment,
                 bookings,
