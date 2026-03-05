@@ -64,16 +64,17 @@ export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
         const farmerId = searchParams.get("farmerId");
-
-        // Complex query: If looking for owner bookings, we need to find bookings for equipment owned by user
-        // For simplicity in this mono-file, let's keep it simple or expand if needed.
-        // Assuming this endpoint primarily serves the "My Bookings" view for farmers.
+        const ownerId = searchParams.get("ownerId");
 
         await connectDB();
 
-        let query = {};
+        let query: any = {};
         if (farmerId) {
-            query = { farmerId };
+            query.farmerId = farmerId;
+        } else if (ownerId) {
+            const equipments = await Equipment.find({ ownerId });
+            const equipmentIds = equipments.map(eq => eq._id);
+            query.equipmentId = { $in: equipmentIds };
         }
 
         const bookings = await Booking.find(query)
@@ -81,17 +82,19 @@ export async function GET(req: Request) {
             .populate("farmerId", "name mobile")
             .sort({ createdAt: -1 });
 
-        const formattedBookings = bookings.map(b => ({
-            id: b._id.toString(),
-            date: b.date,
-            status: b.status,
-            farmerId: b.farmerId?._id?.toString(),
-            farmerName: b.farmerId?.name,
-            equipmentId: b.equipmentId?._id?.toString(),
-            equipmentName: b.equipmentId?.name,
-            // Add more fields as needed by frontend
-            ...b.toObject()
-        }));
+        const formattedBookings = bookings.map(b => {
+            const obj = b.toObject();
+            return {
+                ...obj,
+                id: b._id.toString(),
+                date: b.date,
+                status: b.status,
+                farmerId: b.farmerId && b.farmerId._id ? b.farmerId._id.toString() : (obj.farmerId ? obj.farmerId.toString() : obj.farmerId),
+                farmerName: b.farmerId?.name,
+                equipmentId: b.equipmentId && b.equipmentId._id ? b.equipmentId._id.toString() : (obj.equipmentId ? obj.equipmentId.toString() : obj.equipmentId),
+                equipmentName: b.equipmentId?.name,
+            };
+        });
 
         return NextResponse.json(formattedBookings, { status: 200 });
     } catch (error) {
