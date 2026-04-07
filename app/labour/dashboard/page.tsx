@@ -92,21 +92,7 @@ export default function LabourerDashboard() {
                     </CardContent>
                 </Card>
 
-                {/* Stats / Info Card (Placeholder) */}
-                <Card className="bg-blue-50 border-blue-100">
-                    <CardHeader>
-                        <CardTitle className="text-blue-800">Job Status</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-blue-600">
-                            Your profile is visible to farmers in <strong>{labourer.district}</strong>.
-                        </p>
-                        <div className="mt-4 p-4 bg-white rounded-lg border border-blue-100">
-                            <p className="text-sm text-gray-500">Profile Views</p>
-                            <p className="text-2xl font-bold text-gray-800">12</p>
-                        </div>
-                    </CardContent>
-                </Card>
+
             </div>
 
             {/* Delete Account Confirmation Modal */}
